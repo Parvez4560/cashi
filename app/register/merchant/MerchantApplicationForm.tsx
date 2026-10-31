@@ -11,7 +11,7 @@ export default function MerchantApplicationForm() {
     phone: '',
     email: '',
     additionalInfo: '',
-    hasTradeLicense: 'no', // 'yes' or 'no'
+    hasTradeLicense: 'no',
     tradeLicenseNumber: '',
   });
 
@@ -38,7 +38,7 @@ export default function MerchantApplicationForm() {
   };
 
   return (
-    <div className="bg-[#f0f9f6] border border-[#16a085]/20 rounded-2xl p-6 sm:p-10 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-10 shadow-sm">
       <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
         সাইন আপ
       </h2>
@@ -208,7 +208,7 @@ export default function MerchantApplicationForm() {
 
         {/* যদি হ্যাঁ হয় তবে ট্রেড লাইসেন্স নম্বর ও ছবি */}
         {formData.hasTradeLicense === 'yes' && (
-          <div className="space-y-4 p-4 bg-white/60 border border-gray-200 rounded-xl">
+          <div className="space-y-4 p-4 bg-gray-50 border border-gray-200 rounded-xl">
             <div>
               <label className="block text-sm font-semibold text-gray-800 mb-1.5">
                 ট্রেড লাইসেন্স নম্বর <span className="text-red-500">*</span>
@@ -261,7 +261,7 @@ export default function MerchantApplicationForm() {
             type="submit"
             className="w-full bg-[#16a085] hover:bg-[#12876f] text-white font-semibold py-3.5 rounded-lg shadow-sm transition duration-200"
           >
-            আবেদন জমা দিন
+            জমা দিন
           </button>
         </div>
 
