@@ -37,8 +37,9 @@ export default function TopBar() {
             
             {/* ডাউনলোড বাটন: ব্যাকগ্রাউন্ড সাদা এবং ভেতরের লেখা PrimaryColor */}
             <a
-              href="downloads/app-debug.apk"
-              download="CashI.apk"
+              href="https://cashi-38h6.onrender.com/downloads/app-debug.apk"
+              target="_blank"
+              rel="noopener noreferrer"
               className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-PrimaryColor shadow-sm hover:bg-gray-100 transition-colors"
             >
               𝐂𝐚𝐬𝐡𝐈 App
