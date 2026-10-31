@@ -53,10 +53,10 @@ export default function BusinessSolutions() {
         </p>
       </div>
 
-      {/* মূল স্লাইডার কন্টেইনার - অতিরিক্ত জায়গা পুরোপুরি রিমুভ করা হয়েছে */}
+      {/* মূল স্লাইডার কন্টেইনার */}
       <div className="relative max-w-3xl mx-auto px-0 sm:px-2">
         
-        {/* ১. বাম পাশের বাটন (<) */}
+        {/* বাম পাশের বাটন (<) */}
         <button
           onClick={() => scroll("left")}
           className="absolute -left-1 sm:left-1 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
@@ -67,22 +67,23 @@ export default function BusinessSolutions() {
           </svg>
         </button>
 
-        {/* ২. কার্ডগুলোর ভিউপোর্ট */}
+        {/* কার্ডগুলোর ভিউপোর্ট */}
         <div className="w-full overflow-x-auto no-scrollbar py-2 px-10 sm:px-12" ref={scrollRef} style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           <div className="flex gap-4 sm:gap-6 w-max">
             {solutionsData.map((item, index) => (
               <Link
                 key={index}
                 href={item.link}
+                // এখানে কার্ডের সাইজ আগের মতো স্ট্যান্ডার্ড রাখা হয়েছে (w-[220px] sm:w-[250px])
                 className="flex-shrink-0 w-[220px] sm:w-[250px] min-h-[320px] bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center justify-between text-center group"
               >
-                {/* PNG ইমেজের জন্য ক্লিন কন্টেইনার */}
-                <div className="w-24 h-24 sm:w-28 sm:h-28 relative my-auto flex items-center justify-center rounded-2xl p-2 group-hover:scale-105 transition-transform">
+                {/* শুধুমাত্র ইমেজের বক্স ও ছবির সাইজ বড় করা হয়েছে যাতে কার্ডের ভেতরে ছবিটা বড় দেখায় */}
+                <div className="w-32 h-32 sm:w-36 sm:h-36 relative my-auto flex items-center justify-center rounded-2xl p-1 group-hover:scale-105 transition-transform">
                   <Image
                     src={item.icon}
                     alt={item.title}
-                    width={90}
-                    height={90}
+                    width={200}
+                    height={200}
                     className="object-contain w-full h-full"
                   />
                 </div>
@@ -96,7 +97,7 @@ export default function BusinessSolutions() {
           </div>
         </div>
 
-        {/* ৩. ডান পাশের বাটন (>) */}
+        {/* ডান পাশের বাটন (>) */}
         <button
           onClick={() => scroll("right")}
           className="absolute -right-1 sm:right-1 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
