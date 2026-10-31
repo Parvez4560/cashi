@@ -42,9 +42,9 @@ export default function BusinessSolutions() {
   };
 
   return (
-    <section className="w-full py-8 px-2 max-w-7xl mx-auto bg-gray-50">
+    <section className="w-full py-10 px-2 sm:px-4 max-w-7xl mx-auto bg-gray-50">
       {/* সেকশনের শিরোনাম ও বিবরণ */}
-      <div className="text-center max-w-3xl mx-auto mb-6">
+      <div className="text-center max-w-3xl mx-auto mb-8">
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
           ব্যবসার জন্য ক্যাশি
         </h2>
@@ -53,13 +53,13 @@ export default function BusinessSolutions() {
         </p>
       </div>
 
-      {/* মূল স্লাইডার কন্টেইনার - দুই পাশের অতিরিক্ত গ্যাপ একদম রিমুভ করা হয়েছে */}
-      <div className="relative max-w-4xl mx-auto px-6 sm:px-8">
+      {/* মূল স্লাইডার কন্টেইনার */}
+      <div className="relative max-w-3xl mx-auto px-0 sm:px-2">
         
         {/* বাম পাশের বাটন (<) */}
         <button
           onClick={() => scroll("left")}
-          className="absolute -left-2 sm:left-0 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
+          className="absolute -left-1 sm:left-1 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
           aria-label="Previous"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,15 +68,16 @@ export default function BusinessSolutions() {
         </button>
 
         {/* কার্ডগুলোর ভিউপোর্ট */}
-        <div className="w-full overflow-x-auto no-scrollbar py-2 px-1" ref={scrollRef} style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+        <div className="w-full overflow-x-auto no-scrollbar py-2 px-10 sm:px-12" ref={scrollRef} style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           <div className="flex gap-4 sm:gap-6 w-max">
             {solutionsData.map((item, index) => (
               <Link
                 key={index}
                 href={item.link}
+                // এখানে কার্ডের সাইজ আগের মতো স্ট্যান্ডার্ড রাখা হয়েছে (w-[220px] sm:w-[250px])
                 className="flex-shrink-0 w-[220px] sm:w-[250px] min-h-[320px] bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center justify-between text-center group"
               >
-                {/* কার্ডের ভেতরের ইমেজ বড় এবং ক্লিয়ার রাখা হয়েছে */}
+                {/* শুধুমাত্র ইমেজের বক্স ও ছবির সাইজ বড় করা হয়েছে যাতে কার্ডের ভেতরে ছবিটা বড় দেখায় */}
                 <div className="w-32 h-32 sm:w-36 sm:h-36 relative my-auto flex items-center justify-center rounded-2xl p-1 group-hover:scale-105 transition-transform">
                   <Image
                     src={item.icon}
@@ -99,7 +100,7 @@ export default function BusinessSolutions() {
         {/* ডান পাশের বাটন (>) */}
         <button
           onClick={() => scroll("right")}
-          className="absolute -right-2 sm:right-0 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
+          className="absolute -right-1 sm:right-1 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
           aria-label="Next"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
