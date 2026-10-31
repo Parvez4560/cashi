@@ -1,19 +1,19 @@
 'use client';
 
-import TopBar from "@/components/TopBar";
-import MerchantApplicationForm from ".//MerchantApplicationForm";
+import Header from "@/components/TopBar"; // আপনার ফিক্সড টপবার কম্পোনেন্ট
+import MerchantApplicationForm from ".//MerchantApplicationForm"; // আপনার ফর্ম কম্পোনেন্ট
 
 export default function MerchantRegisterPage() {
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
       
       {/* ফিক্সড টপবার */}
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white shadow-sm">
-        <TopBar />
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white shadow-sm border-b border-gray-100">
+        <Header />
       </header>
 
       {/* মূল কন্টেন্ট */}
-      <main className="pt-20 sm:pt-24 pb-16 px-4 max-w-3xl mx-auto">
+      <main className="pt-24 pb-16 px-4 max-w-3xl mx-auto">
         
         {/* টপ ডেসক্রিপশন সেকশন */}
         <section className="mb-8 text-center sm:text-left space-y-4 px-2">
