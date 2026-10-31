@@ -8,22 +8,22 @@ const solutionsData = [
   {
     title: "মার্চেন্ট",
     icon: "/icons/imaze/merchant.png",
-    link: "/merchant",
+    link: "/register/merchant",
   },
   {
     title: "অনলাইন ব্যবসা",
     icon: "/icons/imaze/online-merchant.png",
-    link: "/online-merchant",
+    link: "/register/online-merchant",
   },
   {
     title: "শিক্ষা প্রতিষ্ঠান",
     icon: "/icons/imaze/education.png",
-    link: "/education",
+    link: "/register/education",
   },
   {
     title: "কর্পোরেট এবং এন্টারপ্রাইজ",
     icon: "/icons/imaze/corporate.png",
-    link: "/corporate",
+    link: "/register/corporate",
   },
 ];
 

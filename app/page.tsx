@@ -1,4 +1,4 @@
-import Header from "../components/TopBar";
+import TopBar from "../components/TopBar";
 import BusinessSolutions from "./components/BusinessSolutions";
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
       
       {/* হেডারকে fixed এবং top-0 করে দেওয়া হয়েছে, ফলে পেজ যত খুশি ওপরের দিকে স্ক্রোল করুন না কেন হেডার একদম ফিক্সড থাকবে */}
       <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white shadow-sm">
-        <Header />
+        <TopBar />
       </header>
 
       {/* যেহেতু হেডার fixed করা হয়েছে, তাই নিচে মূল কন্টেন্টের ওপর যেন হেডারটি চেপে না বসে, এজন্য ওপরের দিকে মার্জিন (pt) দেওয়া হলো */}
