@@ -7,22 +7,22 @@ import Link from "next/link";
 const solutionsData = [
   {
     title: "মার্চেন্ট",
-    icon: "/icons/imaze/merchant.jpg",
+    icon: "/icons/imaze/merchant.png",
     link: "/merchant",
   },
   {
     title: "অনলাইন ব্যবসা",
-    icon: "/icons/imaze/online-merchant.jpg",
+    icon: "/icons/imaze/online-merchant.png",
     link: "/online-merchant",
   },
   {
     title: "শিক্ষা প্রতিষ্ঠান",
-    icon: "/icons/imaze/education.jpg",
+    icon: "/icons/imaze/education.png",
     link: "/education",
   },
   {
     title: "কর্পোরেট এবং এন্টারপ্রাইজ",
-    icon: "/icons/imaze/corporate.jpg",
+    icon: "/icons/imaze/corporate.png",
     link: "/corporate",
   },
 ];
@@ -30,11 +30,10 @@ const solutionsData = [
 export default function BusinessSolutions() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // একটি একটি বা নিখুঁত মাপে স্লাইড করার ফাংশন
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount = clientWidth * 0.6; // কতটুকু দূরত্বে স্ক্রোল করবে
+      const scrollAmount = clientWidth * 0.75;
       scrollRef.current.scrollTo({
         left: direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
         behavior: "smooth",
@@ -43,10 +42,10 @@ export default function BusinessSolutions() {
   };
 
   return (
-    <section className="w-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden bg-gray-50">
+    <section className="w-full py-10 px-2 sm:px-4 max-w-7xl mx-auto bg-gray-50">
       {/* সেকশনের শিরোনাম ও বিবরণ */}
-      <div className="text-center max-w-3xl mx-auto mb-10">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+      <div className="text-center max-w-3xl mx-auto mb-8">
+        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
           ব্যবসার জন্য ক্যাশি
         </h2>
         <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
@@ -54,34 +53,30 @@ export default function BusinessSolutions() {
         </p>
       </div>
 
-      {/* মূল স্লাইডার কন্টেইনার */}
-      <div className="relative max-w-3xl mx-auto px-14 sm:px-16">
+      {/* মূল স্লাইডার কন্টেইনার - অতিরিক্ত জায়গা পুরোপুরি রিমুভ করা হয়েছে */}
+      <div className="relative max-w-3xl mx-auto px-0 sm:px-2">
         
         {/* ১. বাম পাশের বাটন (<) */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
+          className="absolute -left-1 sm:left-1 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
           aria-label="Previous"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        {/* ২. কার্ডগুলোর ভিউপোর্ট (যাতে কার্ডগুলো বাটনের নিচে না পড়ে বরং একটু ভেতর থেকে সরে থাকে) */}
-        <div className="w-full overflow-hidden py-3 px-2">
-          <div
-            ref={scrollRef}
-            className="flex gap-5 sm:gap-6 overflow-x-auto scroll-smooth py-2 px-2 no-scrollbar w-full"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
+        {/* ২. কার্ডগুলোর ভিউপোর্ট */}
+        <div className="w-full overflow-x-auto no-scrollbar py-2 px-10 sm:px-12" ref={scrollRef} style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+          <div className="flex gap-4 sm:gap-6 w-max">
             {solutionsData.map((item, index) => (
               <Link
                 key={index}
                 href={item.link}
                 className="flex-shrink-0 w-[220px] sm:w-[250px] min-h-[320px] bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center justify-between text-center group"
               >
-                {/* ইমেজের ব্যাকগ্রাউন্ড ট্রান্সপারেন্ট রেখে ক্লিন করা হয়েছে */}
+                {/* PNG ইমেজের জন্য ক্লিন কন্টেইনার */}
                 <div className="w-24 h-24 sm:w-28 sm:h-28 relative my-auto flex items-center justify-center rounded-2xl p-2 group-hover:scale-105 transition-transform">
                   <Image
                     src={item.icon}
@@ -104,10 +99,10 @@ export default function BusinessSolutions() {
         {/* ৩. ডান পাশের বাটন (>) */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
+          className="absolute -right-1 sm:right-1 top-1/2 -translate-y-1/2 z-40 w-10 h-10 bg-white border-2 border-gray-200 text-gray-800 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition"
           aria-label="Next"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
           </svg>
         </button>
