@@ -37,7 +37,7 @@ export default function TopBar() {
             
             {/* ডাউনলোড বাটন: ব্যাকগ্রাউন্ড সাদা এবং ভেতরের লেখা PrimaryColor */}
             <a
-              href="https://play.google.com/store/apps/details?id=com.prohor.cashi" // এখানে আপনার আসল অ্যাপের প্যাকেজ লিংক দিয়ে দেবেন
+              href="downloads/app-debug.apk"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-PrimaryColor shadow-sm hover:bg-gray-100 transition-colors"
