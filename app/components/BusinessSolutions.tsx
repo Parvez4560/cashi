@@ -68,8 +68,8 @@ export default function BusinessSolutions() {
         </button>
 
         {/* কার্ডগুলোর ভিউপোর্ট */}
-        <div className="w-full overflow-x-auto no-scrollbar py-2 px-10 sm:px-12" ref={scrollRef} style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-          <div className="flex gap-4 sm:gap-6 w-max">
+        <div className="w-full overflow-x-auto no-scrollbar py-2 px-10 sm:px-8" ref={scrollRef} style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+          <div className="flex gap-4 sm:gap-4 w-max">
             {solutionsData.map((item, index) => (
               <Link
                 key={index}
