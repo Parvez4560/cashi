@@ -26,7 +26,7 @@ export default function MerchantApplicationForm() {
     spouseName: '',
     nidNumber: '',
     dateOfBirth: '',
-    gender: 'male', // male / female / other
+    gender: '',
     occupation: '',
     incomeSource: '',
     monthlyIncome: '',
@@ -41,7 +41,7 @@ export default function MerchantApplicationForm() {
     // Step 4: Business Details
     businessName: '', 
     businessCategory: '',
-    businessMedium: 'facebook', // facebook / website / shop / other
+    businessMedium: '',
     businessAddress: { division: '', district: '', upazila: '', holdingOrVillage: '' },
     hasTradeLicense: 'no',
     tradeLicenseNumber: '',
@@ -102,7 +102,6 @@ export default function MerchantApplicationForm() {
     data.append('accountType', 'MERCHANT');
     data.append('subType', formData.businessMedium || 'retail');
     data.append('phone', formData.phone);
-    data.append('pin', formData.otp || '1234'); // পিন বা ওটিপি
     data.append('email', formData.email || 'merchant@cashi.com');
     data.append('ownerName', formData.ownerName);
     data.append('fatherName', formData.fatherName || '');
