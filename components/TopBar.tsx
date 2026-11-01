@@ -35,11 +35,11 @@ export default function TopBar() {
           {/* Action & Menu */}
           <div className="flex items-center gap-3 sm:gap-4">
             
-            {/* ডাউনলোড বাটন: ব্যাকগ্রাউন্ড সাদা এবং ভেতরের লেখা PrimaryColor */}
+            {/* ডাউনলোড বাটন: সরাসরি ডাউনলোড শুরু হওয়ার জন্য */}
             <a
-              href="https://drive.google.com/file/d/1nizxbnwekqawmT-_Q-VSqX_y90GlFPnY/view?usp=drive_link"
+              href="https://docs.google.com/uc?export=download&id=1nizxbnwekqawmT-_Q-VSqX_y90GlFPnY"
               download="CashI.apk"
-              className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-PrimaryColor shadow-sm hover:bg-gray-100 transition-colors"
+              className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-PrimaryColor shadow-sm hover:bg-gray-100 transition-colors flex items-center justify-center"
             >
               𝐂𝐚𝐬𝐡𝐈 App
             </a>
