@@ -14,31 +14,26 @@ export default function MerchantApplicationForm() {
 
   // সম্পূর্ণ ফর্মের স্ট্রাকচার্ড ডেটা
   const [formData, setFormData] = useState({
-    // Step 1: Phone & Verification
     phone: '',
     otp: '',
     isPhoneVerified: false,
 
-    // Step 2: Personal Info (NID Based)
     ownerName: '',
     fatherName: '',
     motherName: '',
     spouseName: '',
     nidNumber: '',
     dateOfBirth: '',
-    gender: '',
-    occupation: '',
-    incomeSource: '',
-    monthlyIncome: '',
+    gender: 'Male',
+    occupation: 'Business',
+    monthlyIncome: '20000',
     personalAddress: { division: '', district: '', upazila: '', holdingOrVillage: '' },
 
-    // Step 3: Nominee Info
     nomineeName: '',
     nomineeRelation: '',
     nomineeNid: '',
     nomineeDob: '',
 
-    // Step 4: Business Details
     businessName: '', 
     businessCategory: '',
     businessMedium: '',
@@ -52,18 +47,19 @@ export default function MerchantApplicationForm() {
   const [files, setFiles] = useState({
     nidFront: null as File | null,
     nidBack: null as File | null,
-    ownerPhoto: null as File | null, // নিজের চেহারার ছবি
-    nomineeNidDoc: null as File | null, // নমিনির এনআইডি
-    businessShopPhoto: null as File | null, // ব্যবসার দোকান বা সাইনবোর্ডের ছবি
-    utilityBillDoc: null as File | null, // ইউটিলিটি বিলের কপি
+    ownerPhoto: null as File | null,
+    nomineeNidDoc: null as File | null,
+    businessShopPhoto: null as File | null,
+    utilityBillDoc: null as File | null,
     tradeLicenseDoc: null as File | null,
   });
 
+  // ইনপুট ফিল্ডের ক্লাস (মোবাইলে টেক্সট কালার স্পষ্ট রাখার জন্য text-gray-950 এবং font-medium করা হয়েছে)
   const inputClassName =
-    'w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 outline-none focus:outline-none focus:border-[#16a085] focus:ring-2 focus:ring-[#16a085]/20 transition-all text-sm';
+    'w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-950 font-medium outline-none focus:outline-none focus:border-[#16a085] focus:ring-2 focus:ring-[#16a085]/20 transition-all text-sm';
   
   const smallInputClassName =
-    'w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 outline-none focus:outline-none focus:border-[#16a085] focus:ring-2 focus:ring-[#16a085]/20 transition-all text-xs sm:text-sm';
+    'w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-950 font-medium outline-none focus:outline-none focus:border-[#16a085] focus:ring-2 focus:ring-[#16a085]/20 transition-all text-xs sm:text-sm';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -91,14 +87,12 @@ export default function MerchantApplicationForm() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  // সম্পূর্ণ ব্যাকএন্ড কানেক্টেড এবং .env ভিত্তিক সাবমিট ফাংশন
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     const data = new FormData();
 
-    // ১. টেক্সট ডেটা অ্যাপেন্ড করা (phone এর বদলে mobileNumber ব্যবহার করা হয়েছে)
     data.append('accountType', 'MERCHANT');
     data.append('subType', formData.businessMedium || 'retail');
     data.append('mobileNumber', formData.phone);
@@ -108,18 +102,18 @@ export default function MerchantApplicationForm() {
     data.append('motherName', formData.motherName || '');
     data.append('spouseName', formData.spouseName || '');
     data.append('nidNumber', formData.nidNumber);
-    data.append('dateOfBirth', formData.dateOfBirth || '');
-    data.append('gender', formData.gender);
-    data.append('occupation', formData.occupation || '');
-    data.append('monthlyIncome', formData.monthlyIncome || '');
+    data.append('dateOfBirth', formData.dateOfBirth || '1995-01-01');
+    data.append('gender', formData.gender || 'Male');
+    data.append('occupation', formData.occupation || 'Business');
+    data.append('monthlyIncome', formData.monthlyIncome || '20000');
 
-    // অবজেক্টগুলোকে JSON string এ রূপান্তর করে পাঠানো
     data.append('personalAddress', JSON.stringify(formData.personalAddress));
     data.append('businessAddress', JSON.stringify(formData.businessAddress));
 
     data.append('nomineeName', formData.nomineeName || '');
     data.append('nomineeRelation', formData.nomineeRelation || '');
     data.append('nomineeNid', formData.nomineeNid || '');
+    data.append('nomineeDob', formData.nomineeDob || '');
 
     data.append('businessName', formData.businessName || '');
     data.append('businessCategory', formData.businessCategory || '');
@@ -127,7 +121,6 @@ export default function MerchantApplicationForm() {
     data.append('hasTradeLicense', formData.hasTradeLicense);
     data.append('tradeLicenseNumber', formData.tradeLicenseNumber || '');
 
-    // ২. ফাইলগুলো অ্যাপেন্ড করা
     if (files.nidFront) data.append('nidFront', files.nidFront);
     if (files.nidBack) data.append('nidBack', files.nidBack);
     if (files.ownerPhoto) data.append('ownerPhoto', files.ownerPhoto);
@@ -137,19 +130,17 @@ export default function MerchantApplicationForm() {
     if (files.tradeLicenseDoc) data.append('tradeLicenseDoc', files.tradeLicenseDoc);
 
     try {
-      // .env থেকে API URL রিড করবে, না থাকলে লোকালহোস্ট ব্যবহার করবে
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
       const response = await fetch(`${API_URL}/account/register`, {
         method: 'POST',
-        body: data, // ব্রাউজার নিজেই multipart/form-data হেডার সেট করে নেবে
+        body: data,
       });
 
       const result = await response.json();
 
       if (response.ok && result.success) {
         alert(`অভিনন্দন! আপনার মার্চেন্ট আবেদন সফলভাবে জমা হয়েছে।\n\nঅ্যাকাউন্ট আইডি: ${result.data.accountId}\nভার্চুয়াল আইডি: ${result.data.virtualId}`);
-        // সফল হওয়ার পর ফর্ম রিসেট বা রিডাইরেক্ট করতে পারেন
       } else {
         alert(`ত্রুটি: ${result.message || 'আবেদন জমা দিতে সমস্যা হয়েছে।'}`);
       }
@@ -162,21 +153,21 @@ export default function MerchantApplicationForm() {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-10 shadow-sm max-w-3xl mx-auto">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-10 shadow-sm max-w-3xl mx-auto text-gray-950">
       
       {/* প্রগ্রেস বার ও স্টেপ ইন্ডিকেটর */}
       <div className="mb-8">
         <div className="flex items-center justify-between max-w-md mx-auto mb-3">
           {[1, 2, 3, 4, 5, 6].map((step) => (
             <div key={step} className="flex items-center">
-              <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs transition-colors ${currentStep >= step ? 'bg-[#16a085] text-white' : 'bg-gray-100 text-gray-400 border border-gray-300'}`}>
+              <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-bold text-xs transition-colors ${currentStep >= step ? 'bg-[#16a085] text-white' : 'bg-gray-100 text-gray-500 border border-gray-300'}`}>
                 {step}
               </div>
               {step < 6 && <div className={`h-1 w-4 sm:w-8 transition-colors ${currentStep > step ? 'bg-[#16a085]' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
-        <p className="text-center text-sm font-semibold text-gray-700">
+        <p className="text-center text-sm font-bold text-gray-900">
           {currentStep === 1 && 'ধাপ ১: মোবাইল নম্বর ও ভেরিফিকেশন'}
           {currentStep === 2 && 'ধাপ ২: ব্যক্তিগত তথ্য ও NID'}
           {currentStep === 3 && 'ধাপ ৩: নমিনির তথ্য'}
@@ -195,9 +186,9 @@ export default function MerchantApplicationForm() {
         {currentStep === 6 && <Step6ReviewSummary formData={formData} files={files} />}
 
         {/* নেভিগেশন বাটন */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
           {currentStep > 1 ? (
-            <button type="button" onClick={handlePrev} className="px-6 py-3 rounded-lg border border-gray-300 font-medium text-gray-700 hover:bg-gray-50 transition text-sm">
+            <button type="button" onClick={handlePrev} className="px-6 py-3 rounded-lg border border-gray-300 font-semibold text-gray-800 hover:bg-gray-100 transition text-sm">
               পূর্ববর্তী
             </button>
           ) : <div />}
