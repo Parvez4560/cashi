@@ -2,16 +2,12 @@ import React from 'react';
 
 export default function Step3NomineeInfo({ formData, setFormData, handleChange, inputClassName }: any) {
 
-  // নাম ফিল্ডের জন্য শুধু ইংরেজি অক্ষর ও স্পেস ফিল্টার
+  // শুধুমাত্র ইংরেজি অক্ষর ও স্পেস নেওয়ার হ্যান্ডলার
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const regex = /^[A-Za-z\s.\-_]*$/;
     if (regex.test(value)) {
-      if (setFormData) {
-        setFormData((prev: any) => ({ ...prev, [name]: value }));
-      } else {
-        handleChange(e);
-      }
+      setFormData((prev: any) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -19,67 +15,49 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
   const handleNidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const numericValue = value.replace(/\D/g, '');
-    if (setFormData) {
-      setFormData((prev: any) => ({ ...prev, [name]: numericValue }));
-    } else {
-      e.target.value = numericValue;
-      handleChange(e);
-    }
+    setFormData((prev: any) => ({ ...prev, [name]: numericValue }));
   };
 
-  // বর্তমান ডেট স্ট্রিং থেকে দিন, মাস এবং বছর আলাদা করে নেওয়া (যেমন: "2005-08-15" থেকে)
+  // বর্তমান ডেট স্ট্রিং থেকে দিন, মাস এবং বছর আলাদা করে নেওয়া
   const dateParts = (formData?.nomineeDob || '').split('-');
   const dobYear = dateParts[0] || '';
   const dobMonth = dateParts[1] || '';
   const dobDay = dateParts[2] || '';
 
-  // দিন, মাস বা বছর পরিবর্তনের হ্যান্ডলার (যাতে একটি পরিবর্তন করলে অন্যটি মুছে না যায়)
+  // দিন, মাস বা বছর পরিবর্তনের নিরাপদ হ্যান্ডলার
   const handleDateChange = (type: 'day' | 'month' | 'year', val: string) => {
     let d = type === 'day' ? val : dobDay;
     let m = type === 'month' ? val : dobMonth;
     let y = type === 'year' ? val : dobYear;
 
-    // যদি তিনটি অংশই সিলেক্ট করা থাকে তবেই সম্পূর্ণ ডেট ফরম্যাট তৈরি করে সেভ করবে, অন্যথায় আংশিক বা খালি রাখবে
-    let newDob = '';
-    if (y && m && d) {
-      newDob = `${y}-${m}-${d}`;
-    } else {
-      // সাময়িকভাবে স্টেট ধরে রাখার জন্য
-      newDob = `${y || 'YYYY'}-${m || 'MM'}-${d || 'DD'}`;
-    }
-
-    setFormData((prev: any) => ({ ...prev, nomineeDob: y && m && d ? `${y}-${m}-${d}` : prev.nomineeDob }));
-  };
-
-  // সরাসরি আলাদা স্টেট বা হ্যান্ডলারের মাধ্যমে মান আপডেট করার নিরাপদ লজিক
-  const [selectedDay, setSelectedDay] = React.useState(dobDay);
-  const [selectedMonth, setSelectedMonth] = React.useState(dobMonth);
-  const [selectedYear, setSelectedYear] = React.useState(dobYear);
-
-  const updateDob = (d: string, m: string, y: string) => {
+    // যদি তিনটি ফিল্ডই সিলেক্ট করা হয়, তবেই YYYY-MM-DD ফরম্যাটে সেভ করবে
     if (d && m && y) {
       const formattedDate = `${y}-${m}-${d}`;
       setFormData((prev: any) => ({ ...prev, nomineeDob: formattedDate }));
+    } else {
+      // যদি আংশিক সিলেক্ট করা থাকে, সাময়িকভাবে স্টোরে রাখব যাতে রিসেট না হয়
+      const partialDate = `${y || 'YYYY'}-${m || 'MM'}-${d || 'DD'}`;
+      setFormData((prev: any) => ({ ...prev, nomineeDob: partialDate }));
     }
   };
 
-  // বছর, দিন এবং মাসের লিস্ট
+  // বছর, দিন এবং মাসের লিস্ট (ইংরেজিতে)
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1940 + 1 }, (_, i) => (currentYear - i).toString());
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
   const months = [
-    { value: '01', name: 'January (জানুয়ারি)' },
-    { value: '02', name: 'February (ফেব্রুয়ারি)' },
-    { value: '03', name: 'March (মার্চ)' },
-    { value: '04', name: 'April (এপ্রিল)' },
-    { value: '05', name: 'May (মে)' },
-    { value: '06', name: 'June (জুন)' },
-    { value: '07', name: 'July (জুলাই)' },
-    { value: '08', name: 'August (আগস্ট)' },
-    { value: '09', name: 'September (সেপ্টেম্বর)' },
-    { value: '10', name: 'October (অক্টোবর)' },
-    { value: '11', name: 'November (নভেম্বর)' },
-    { value: '12', name: 'December (ডিসেম্বর)' }
+    { value: '01', name: 'January' },
+    { value: '02', name: 'February' },
+    { value: '03', name: 'March' },
+    { value: '04', name: 'April' },
+    { value: '05', name: 'May' },
+    { value: '06', name: 'June' },
+    { value: '07', name: 'July' },
+    { value: '08', name: 'August' },
+    { value: '09', name: 'September' },
+    { value: '10', name: 'October' },
+    { value: '11', name: 'November' },
+    { value: '12', name: 'December' }
   ];
 
   return (
@@ -139,16 +117,16 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
         </div>
       </div>
 
-      {/* জন্ম তারিখ সিলেক্ট করার নিরাপদ ৩টি ড্রপডাউন */}
+      {/* জন্ম তারিখ সিলেক্ট করার ড্রপডাউন (সম্পূর্ণ ইংরেজিতে এবং নিরাপদভাবে ডেটা হোল্ড করবে) */}
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-1.5">
           Nominee's Date of Birth <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-2">
-          {/* দিন */}
+          {/* Day */}
           <select
             value={dobDay}
-            onChange={(e) => updateDob(e.target.value, dobMonth, dobYear)}
+            onChange={(e) => handleDateChange('day', e.target.value)}
             className={inputClassName}
             required
           >
@@ -158,10 +136,10 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
             ))}
           </select>
 
-          {/* মাস */}
+          {/* Month */}
           <select
             value={dobMonth}
-            onChange={(e) => updateDob(dobDay, e.target.value, dobYear)}
+            onChange={(e) => handleDateChange('month', e.target.value)}
             className={inputClassName}
             required
           >
@@ -171,10 +149,10 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
             ))}
           </select>
 
-          {/* বছর */}
+          {/* Year */}
           <select
             value={dobYear}
-            onChange={(e) => updateDob(dobDay, dobMonth, e.target.value)}
+            onChange={(e) => handleDateChange('year', e.target.value)}
             className={inputClassName}
             required
           >
