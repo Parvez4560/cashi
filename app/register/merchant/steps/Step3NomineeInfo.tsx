@@ -27,40 +27,63 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
     }
   };
 
-  // জন্ম তারিখের দিন, মাস ও বছর আলাদাভাবে সামলানোর লজিক
-  const [dobDay, dobMonth, dobYear] = (formData?.nomineeDob || '--').split('-');
+  // বর্তমান ডেট স্ট্রিং থেকে দিন, মাস এবং বছর আলাদা করে নেওয়া (যেমন: "2005-08-15" থেকে)
+  const dateParts = (formData?.nomineeDob || '').split('-');
+  const dobYear = dateParts[0] || '';
+  const dobMonth = dateParts[1] || '';
+  const dobDay = dateParts[2] || '';
 
+  // দিন, মাস বা বছর পরিবর্তনের হ্যান্ডলার (যাতে একটি পরিবর্তন করলে অন্যটি মুছে না যায়)
   const handleDateChange = (type: 'day' | 'month' | 'year', val: string) => {
-    let day = type === 'day' ? val : (dobDay || '01');
-    let month = type === 'month' ? val : (dobMonth || '01');
-    let year = type === 'year' ? val : (dobYear || '2000');
+    let d = type === 'day' ? val : dobDay;
+    let m = type === 'month' ? val : dobMonth;
+    let y = type === 'year' ? val : dobYear;
 
-    // YYYY-MM-DD ফরম্যাটে সেভ করবে
-    const formattedDob = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    setFormData((prev: any) => ({ ...prev, nomineeDob: formattedDob }));
+    // যদি তিনটি অংশই সিলেক্ট করা থাকে তবেই সম্পূর্ণ ডেট ফরম্যাট তৈরি করে সেভ করবে, অন্যথায় আংশিক বা খালি রাখবে
+    let newDob = '';
+    if (y && m && d) {
+      newDob = `${y}-${m}-${d}`;
+    } else {
+      // সাময়িকভাবে স্টেট ধরে রাখার জন্য
+      newDob = `${y || 'YYYY'}-${m || 'MM'}-${d || 'DD'}`;
+    }
+
+    setFormData((prev: any) => ({ ...prev, nomineeDob: y && m && d ? `${y}-${m}-${d}` : prev.nomineeDob }));
   };
 
-  // বছর জেনারেট করার লজিক (১৯৪০ থেকে বর্তমান বছর পর্যন্ত)
+  // সরাসরি আলাদা স্টেট বা হ্যান্ডলারের মাধ্যমে মান আপডেট করার নিরাপদ লজিক
+  const [selectedDay, setSelectedDay] = React.useState(dobDay);
+  const [selectedMonth, setSelectedMonth] = React.useState(dobMonth);
+  const [selectedYear, setSelectedYear] = React.useState(dobYear);
+
+  const updateDob = (d: string, m: string, y: string) => {
+    if (d && m && y) {
+      const formattedDate = `${y}-${m}-${d}`;
+      setFormData((prev: any) => ({ ...prev, nomineeDob: formattedDate }));
+    }
+  };
+
+  // বছর, দিন এবং মাসের লিস্ট
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1940 + 1 }, (_, i) => currentYear - i);
+  const years = Array.from({ length: currentYear - 1940 + 1 }, (_, i) => (currentYear - i).toString());
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
   const months = [
-    { value: '01', name: 'Jan (০১)' },
-    { value: '02', name: 'Feb (০২)' },
-    { value: '03', name: 'Mar (০৩)' },
-    { value: '04', name: 'Apr (০৪)' },
-    { value: '05', name: 'May (০৫)' },
-    { value: '06', name: 'Jun (০৬)' },
-    { value: '07', name: 'Jul (০৭)' },
-    { value: '08', name: 'Aug (০৮)' },
-    { value: '09', name: 'Sep (০৯)' },
-    { value: '10', name: 'Oct (১০)' },
-    { value: '11', name: 'Nov (১১)' },
-    { value: '12', name: 'Dec (১২)' }
+    { value: '01', name: 'January (জানুয়ারি)' },
+    { value: '02', name: 'February (ফেব্রুয়ারি)' },
+    { value: '03', name: 'March (মার্চ)' },
+    { value: '04', name: 'April (এপ্রিল)' },
+    { value: '05', name: 'May (মে)' },
+    { value: '06', name: 'June (জুন)' },
+    { value: '07', name: 'July (জুলাই)' },
+    { value: '08', name: 'August (আগস্ট)' },
+    { value: '09', name: 'September (সেপ্টেম্বর)' },
+    { value: '10', name: 'October (অক্টোবর)' },
+    { value: '11', name: 'November (নভেম্বর)' },
+    { value: '12', name: 'December (ডিসেম্বর)' }
   ];
 
   return (
-    <div className="space-y-4 text-gray-900">
+    <div className="space-y-4 text-gray-950">
       <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Nominee Information (English Only)</h3>
       <p className="text-xs text-gray-600">Please provide nominee details in English as per their NID card.</p>
 
@@ -116,7 +139,7 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
         </div>
       </div>
 
-      {/* 🔹 সমাধান: জন্ম তারিখ সিলেক্ট করার সহজ ৩টি ড্রপডাউন (দিন - মাস - বছর) */}
+      {/* জন্ম তারিখ সিলেক্ট করার নিরাপদ ৩টি ড্রপডাউন */}
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-1.5">
           Nominee's Date of Birth <span className="text-red-500">*</span>
@@ -124,12 +147,12 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
         <div className="grid grid-cols-3 gap-2">
           {/* দিন */}
           <select
-            value={dobDay || ''}
-            onChange={(e) => handleDateChange('day', e.target.value)}
+            value={dobDay}
+            onChange={(e) => updateDob(e.target.value, dobMonth, dobYear)}
             className={inputClassName}
             required
           >
-            <option value="">Day (দিন)</option>
+            <option value="">Day</option>
             {days.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
@@ -137,12 +160,12 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
 
           {/* মাস */}
           <select
-            value={dobMonth || ''}
-            onChange={(e) => handleDateChange('month', e.target.value)}
+            value={dobMonth}
+            onChange={(e) => updateDob(dobDay, e.target.value, dobYear)}
             className={inputClassName}
             required
           >
-            <option value="">Month (মাস)</option>
+            <option value="">Month</option>
             {months.map((m) => (
               <option key={m.value} value={m.value}>{m.name}</option>
             ))}
@@ -150,14 +173,14 @@ export default function Step3NomineeInfo({ formData, setFormData, handleChange, 
 
           {/* বছর */}
           <select
-            value={dobYear || ''}
-            onChange={(e) => handleDateChange('year', e.target.value)}
+            value={dobYear}
+            onChange={(e) => updateDob(dobDay, dobMonth, e.target.value)}
             className={inputClassName}
             required
           >
-            <option value="">Year (বছর)</option>
+            <option value="">Year</option>
             {years.map((y) => (
-              <option key={y} value={y.toString()}>{y}</option>
+              <option key={y} value={y}>{y}</option>
             ))}
           </select>
         </div>
