@@ -98,10 +98,10 @@ export default function MerchantApplicationForm() {
 
     const data = new FormData();
 
-    // ১. টেক্সট ডেটা অ্যাপেন্ড করা
+    // ১. টেক্সট ডেটা অ্যাপেন্ড করা (phone এর বদলে mobileNumber ব্যবহার করা হয়েছে)
     data.append('accountType', 'MERCHANT');
     data.append('subType', formData.businessMedium || 'retail');
-    data.append('phone', formData.phone);
+    data.append('mobileNumber', formData.phone);
     data.append('email', formData.email || 'merchant@cashi.com');
     data.append('ownerName', formData.ownerName);
     data.append('fatherName', formData.fatherName || '');
@@ -148,7 +148,7 @@ export default function MerchantApplicationForm() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        alert(`অভিনন্দন! আপনার মার্চেন্ট আবেদন সফলভাবে জমা হয়েছে।\nকাস্টমার আইডি: ${result.data.customerId}`);
+        alert(`অভিনন্দন! আপনার মার্চেন্ট আবেদন সফলভাবে জমা হয়েছে।\n\nঅ্যাকাউন্ট আইডি: ${result.data.accountId}\nভার্চুয়াল আইডি: ${result.data.virtualId}`);
         // সফল হওয়ার পর ফর্ম রিসেট বা রিডাইরেক্ট করতে পারেন
       } else {
         alert(`ত্রুটি: ${result.message || 'আবেদন জমা দিতে সমস্যা হয়েছে।'}`);
