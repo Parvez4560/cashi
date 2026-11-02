@@ -146,7 +146,7 @@ export default function MerchantApplicationForm() {
       }
     } catch (error) {
       console.error('Network Error:', error);
-      alert('সার্ভার কানেকশনে সমস্যা হয়েছে। দয়া করে আপনার ব্যাকএন্ড সার্ভার চালু আছে কি না চেক করুন।');
+      alert('Server Error');
     } finally {
       setLoading(false);
     }
