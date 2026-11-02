@@ -102,10 +102,10 @@ export default function MerchantApplicationForm() {
     data.append('motherName', formData.motherName || '');
     data.append('spouseName', formData.spouseName || '');
     data.append('nidNumber', formData.nidNumber);
-    data.append('dateOfBirth', formData.dateOfBirth || '1995-01-01');
-    data.append('gender', formData.gender || 'Male');
-    data.append('occupation', formData.occupation || 'Business');
-    data.append('monthlyIncome', formData.monthlyIncome || '20000');
+    data.append('dateOfBirth', formData.dateOfBirth || '');
+    data.append('gender', formData.gender || '');
+    data.append('occupation', formData.occupation || '');
+    data.append('monthlyIncome', formData.monthlyIncome || '');
 
     data.append('personalAddress', JSON.stringify(formData.personalAddress));
     data.append('businessAddress', JSON.stringify(formData.businessAddress));
