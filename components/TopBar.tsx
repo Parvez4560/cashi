@@ -18,7 +18,7 @@ export default function TopBar() {
           <Link href="/" className="flex items-center gap-3">
             <div className="h-10 w-10 relative">
               <Image
-                src="/icons/cashi.jpg"
+                src="/icons/cashi.png"
                 alt="CashI"
                 width={40}
                 height={40}
