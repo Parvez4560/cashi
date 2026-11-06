@@ -17,6 +17,7 @@ export default function MerchantApplicationForm() {
     phone: '',
     otp: '',
     isPhoneVerified: false,
+    verificationToken: '',
 
     ownerName: '',
     fatherName: '',
@@ -97,6 +98,7 @@ export default function MerchantApplicationForm() {
     data.append('subType', formData.businessMedium || 'retail');
     data.append('mobileNumber', formData.phone);
     data.append('email', formData.email || 'merchant@cashi.com');
+    data.append('verificationToken', formData.verificationToken || '');
     data.append('ownerName', formData.ownerName);
     data.append('fatherName', formData.fatherName || '');
     data.append('motherName', formData.motherName || '');
