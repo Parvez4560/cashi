@@ -12,9 +12,12 @@ export default function MerchantApplicationForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // সম্পূর্ণ ফর্মের স্ট্রাকচার্ড ডেটা
+  // সম্পূর্ণ ফর্মের স্ট্রাকচার্ড ডেটা (কান্ট্রি ফিল্ডগুলো যুক্ত করা হয়েছে)
   const [formData, setFormData] = useState({
-    phone: '',
+    countryIso: 'BD',         // 🔹 ডিফল্ট কান্ট্রি আইএসও
+    dialCode: '+880',         // 🔹 ডিফল্ট ডায়াল কোড
+    phone: '',                // লোকাল মোবাইল নম্বর
+    fullNumber: '',           // 🔹 ডায়াল কোডসহ ফুল ইন্টারন্যাশনাল নম্বর
     otp: '',
     isPhoneVerified: false,
     verificationToken: '',
@@ -55,7 +58,6 @@ export default function MerchantApplicationForm() {
     tradeLicenseDoc: null as File | null,
   });
 
-  // ইনপুট ফিল্ডের ক্লাস (মোবাইলে টেক্সট কালার স্পষ্ট রাখার জন্য text-gray-950 এবং font-medium করা হয়েছে)
   const inputClassName =
     'w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-950 font-medium outline-none focus:outline-none focus:border-[#16a085] focus:ring-2 focus:ring-[#16a085]/20 transition-all text-sm';
   
@@ -96,8 +98,11 @@ export default function MerchantApplicationForm() {
 
     data.append('accountType', 'MERCHANT');
     data.append('subType', formData.businessMedium || 'retail');
-    data.append('mobileNumber', formData.phone);
-    data.append('email', formData.email || 'merchant@cashi.com');
+    data.append('countryIso', formData.countryIso);       // 🔹 কান্ট্রি আইএসও
+    data.append('dialCode', formData.dialCode);           // 🔹 ডায়াল কোড
+    data.append('mobileNumber', formData.phone);          // লোকাল মোবাইল নম্বর
+    data.append('fullNumber', formData.fullNumber);       // 🔹 ফুল ইন্টারন্যাশনাল নম্বর
+    data.append('email', formData.email || '');
     data.append('verificationToken', formData.verificationToken || '');
     data.append('ownerName', formData.ownerName);
     data.append('fatherName', formData.fatherName || '');
@@ -132,7 +137,7 @@ export default function MerchantApplicationForm() {
     if (files.tradeLicenseDoc) data.append('tradeLicenseDoc', files.tradeLicenseDoc);
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
       const response = await fetch(`${API_URL}/account/register`, {
         method: 'POST',
@@ -157,7 +162,6 @@ export default function MerchantApplicationForm() {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-10 shadow-sm max-w-3xl mx-auto text-gray-950">
       
-      {/* প্রগ্রেস বার ও স্টেপ ইন্ডিকেটর */}
       <div className="mb-8">
         <div className="flex items-center justify-between max-w-md mx-auto mb-3">
           {[1, 2, 3, 4, 5, 6].map((step) => (
@@ -187,7 +191,6 @@ export default function MerchantApplicationForm() {
         {currentStep === 5 && <Step5DocumentsUpload formData={formData} files={files} handleFileChange={handleFileChange} />}
         {currentStep === 6 && <Step6ReviewSummary formData={formData} files={files} />}
 
-        {/* নেভিগেশন বাটন */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-200">
           {currentStep > 1 ? (
             <button type="button" onClick={handlePrev} className="px-6 py-3 rounded-lg border border-gray-300 font-semibold text-gray-800 hover:bg-gray-100 transition text-sm">
