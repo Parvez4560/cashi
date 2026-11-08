@@ -112,7 +112,7 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
 
     const regex = new RegExp(selectedCountry.regexPattern);
     if (!regex.test(cleanLocalPhone)) {
-      alert(`নম্বরটি সঠিক নয়। অনুগ্রহ করে '${selectedCountry.placeholder}' ফরম্যাটে সঠিক নম্বর দিন।`);
+      alert(`সঠিক মোবাইল নম্বর দিন।`);
       return;
     }
 
