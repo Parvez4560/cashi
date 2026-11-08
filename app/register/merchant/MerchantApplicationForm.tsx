@@ -124,6 +124,7 @@ export default function MerchantApplicationForm() {
     data.append('nomineeDob', formData.nomineeDob || '');
 
     data.append('businessName', formData.businessName || '');
+    data.append('companyName', formData.businessName || '');
     data.append('businessCategory', formData.businessCategory || '');
     data.append('businessMedium', formData.businessMedium || '');
     data.append('hasTradeLicense', formData.hasTradeLicense);
