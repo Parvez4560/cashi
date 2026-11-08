@@ -12,12 +12,12 @@ export default function MerchantApplicationForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // সম্পূর্ণ ফর্মের স্ট্রাকচার্ড ডেটা (কান্ট্রি ফিল্ডগুলো যুক্ত করা হয়েছে)
   const [formData, setFormData] = useState({
-    countryIso: 'BD',         // 🔹 ডিফল্ট কান্ট্রি আইএসও
-    dialCode: '+880',         // 🔹 ডিফল্ট ডায়াল কোড
-    phone: '',                // লোকাল মোবাইল নম্বর
-    fullNumber: '',           // 🔹 ডায়াল কোডসহ ফুল ইন্টারন্যাশনাল নম্বর
+    countryName: '',
+    countryIso: '',         
+    dialCode: '',
+    mobileNumber: '',         
+    localNumber: '',           
     otp: '',
     isPhoneVerified: false,
     verificationToken: '',
@@ -28,9 +28,9 @@ export default function MerchantApplicationForm() {
     spouseName: '',
     nidNumber: '',
     dateOfBirth: '',
-    gender: 'Male',
-    occupation: 'Business',
-    monthlyIncome: '20000',
+    gender: '',
+    occupation: '',
+    monthlyIncome: '',
     personalAddress: { division: '', district: '', upazila: '', holdingOrVillage: '' },
 
     nomineeName: '',
@@ -98,10 +98,10 @@ export default function MerchantApplicationForm() {
 
     data.append('accountType', 'MERCHANT');
     data.append('subType', formData.businessMedium || 'retail');
-    data.append('countryIso', formData.countryIso);       // 🔹 কান্ট্রি আইএসও
-    data.append('dialCode', formData.dialCode);           // 🔹 ডায়াল কোড
-    data.append('mobileNumber', formData.phone);          // লোকাল মোবাইল নম্বর
-    data.append('fullNumber', formData.fullNumber);       // 🔹 ফুল ইন্টারন্যাশনাল নম্বর
+    data.append('countryName', formData.countryName);
+    data.append('countryIso', formData.countryIso);       
+    data.append('dialCode', formData.dialCode);
+    data.append('mobileNumber', formData.mobileNumber)       
     data.append('email', formData.email || '');
     data.append('verificationToken', formData.verificationToken || '');
     data.append('ownerName', formData.ownerName);

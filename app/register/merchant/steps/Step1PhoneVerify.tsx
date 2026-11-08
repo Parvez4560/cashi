@@ -12,17 +12,7 @@ interface CountryRule {
   stripLength: number;
   placeholder: string;
   regexPattern: string;
-  flag?: string;
 }
-
-// দেশগুলোর পতাকা ইমোজি ম্যাপিং
-const countryFlags: { [key: string]: string } = {
-  BD: '🇧🇩',
-  HU: '🇭🇺',
-  IN: '🇮🇳',
-  PK: '🇵🇰',
-  SA: '🇸🇦',
-};
 
 export default function Step1PhoneVerify({ formData, setFormData, handleChange, inputClassName }: any) {
   const [otpSent, setOtpSent] = useState(false);
@@ -30,42 +20,28 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
   
   const [countries, setCountries] = useState<CountryRule[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<CountryRule | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://cashi-server.onrender.com';
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  // বাইরে ক্লিক করলে ড্রপডাউন বন্ধ করার জন্য
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
-  // ১. পেজ লোড হলে ব্যাকএন্ড থেকে কান্ট্রি রুলস ফেচ করা
   useEffect(() => {
     const fetchCountryRules = async () => {
       try {
         const res = await fetch(`${API_URL}/api/countries/rules`);
         const result = await res.json();
         if (res.ok && result.success) {
-          const formattedData = result.data.map((c: CountryRule) => ({
-            ...c,
-            flag: countryFlags[c.countryIso] || '🏳️'
-          }));
-
-          setCountries(formattedData);
-          const defaultCountry = formattedData.find((c: CountryRule) => c.countryIso === 'BD') || formattedData[0];
+          setCountries(result.data);
+          const defaultCountry = result.data.find((c: CountryRule) => c.countryIso === 'BD') || result.data[0];
           setSelectedCountry(defaultCountry);
           
           setFormData((prev: any) => ({
             ...prev,
-            countryIso: defaultCountry?.countryIso || 'BD',
-            dialCode: defaultCountry?.dialCode || '+880'
+            countryName: defaultCountry?.countryName || '',
+            countryIso: defaultCountry?.countryIso || '',
+            dialCode: defaultCountry?.dialCode || ''
           }));
         }
       } catch (err) {
@@ -76,69 +52,79 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
     fetchCountryRules();
   }, [API_URL, setFormData]);
 
-  // দেশ সিলেক션 হ্যান্ডলার
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setIsModalOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleSelectCountry = (country: CountryRule) => {
     setSelectedCountry(country);
-    setIsDropdownOpen(false);
-    
     setFormData({
       ...formData,
+      countryName: country.countryName,
       countryIso: country.countryIso,
-      dialCode: country.dialCode, // ব্যাকএন্ডে ফুল ডায়াল কোড যাবে
-      phone: '',
-      fullNumber: ''
+      dialCode: country.dialCode,
+      localNumber: '',
+      mobileNumber: ''
     });
+    setIsModalOpen(false);
+    setSearchQuery('');
   };
 
-  // মোবাইল নম্বর ইনপুট পরিবর্তনের সময় fullNumber জেনারেট করা
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawPhone = e.target.value;
     const cleanPhone = rawPhone.replace(/\D/g, '');
 
-    let processedPhone = cleanPhone;
+    let processedNationalNumber = cleanPhone;
     if (selectedCountry && selectedCountry.shouldStripPrefix && selectedCountry.stripLength > 0) {
-      if (cleanPhone.length > selectedCountry.nationalNumberLength) {
-        processedPhone = cleanPhone.slice(selectedCountry.stripLength);
+      if (cleanPhone.length > selectedCountry.stripLength && cleanPhone.startsWith('0')) {
+        processedNationalNumber = cleanPhone.slice(selectedCountry.stripLength);
       }
     }
 
-    const fullNum = selectedCountry ? `${selectedCountry.dialCode}${processedPhone}` : cleanPhone;
+    // dialCode + processedNationalNumber মিলিয়ে ফুল মোবাইল নম্বর তৈরি
+    const fullMobileNumber = selectedCountry ? `${selectedCountry.dialCode}${processedNationalNumber}` : cleanPhone;
 
     setFormData({
       ...formData,
-      phone: rawPhone,
-      fullNumber: fullNum
+      localNumber: rawPhone,          // লোকাল নম্বর (UI ইনপুট বক্সের জন্য)
+      mobileNumber: fullMobileNumber   // আসল ফুল নম্বর (সার্ভার ও এপিআই-এর জন্য)
     });
   };
 
-  // ২. ওটিপি পাঠানোর রিকোয়েস্ট
   const handleSendOtp = async () => {
     if (!selectedCountry) {
       alert('দয়া করে একটি দেশ নির্বাচন করুন।');
       return;
     }
 
-    const cleanPhone = formData.phone.replace(/\D/g, '');
-    if (!cleanPhone || cleanPhone.length < selectedCountry.nationalNumberLength) {
-      alert(`দয়া করে সঠিক ${selectedCountry.nationalNumberLength} ডিজিটের মোবাইল নম্বর দিন।`);
+    const cleanLocalPhone = formData.localNumber ? formData.localNumber.trim() : '';
+    
+    if (!cleanLocalPhone) {
+      alert('দয়া করে মোবাইল নম্বর লিখুন।');
       return;
     }
 
     const regex = new RegExp(selectedCountry.regexPattern);
-    if (!regex.test(cleanPhone)) {
-      alert(`নম্বরটি সঠিক নয়। অনুগ্রহ করে '${selectedCountry.placeholder}' ফরম্যাটে লিখুন।`);
+    if (!regex.test(cleanLocalPhone)) {
+      alert(`নম্বরটি সঠিক নয়। অনুগ্রহ করে '${selectedCountry.placeholder}' ফরম্যাটে সঠিক নম্বর দিন।`);
       return;
     }
 
     setLoading(true);
     try {
+      // ব্যাকএন্ডে ফুল মোবাইল নম্বর (mobileNumber: +88017...) পাঠানো হচ্ছে
       const response = await fetch(`${API_URL}/api/otp/registration/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           countryIso: selectedCountry.countryIso,
-          mobileNumber: formData.phone,
-          fullNumber: formData.fullNumber
+          mobileNumber: formData.mobileNumber 
         })
       });
 
@@ -146,7 +132,6 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
 
       if (response.ok && result.success) {
         setOtpSent(true);
-        alert('আপনার মোবাইল নম্বরে ৬-সংখ্যার ওটিপি পাঠানো হয়েছে।');
       } else {
         alert(result.message || 'ওটিপি পাঠাতে সমস্যা হয়েছে।');
       }
@@ -158,7 +143,6 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
     }
   };
 
-  // ৩. ওটিপি ভেরিফাই করা
   const handleVerifyOtp = async () => {
     if (!formData.otp || formData.otp.length !== 6) {
       alert('দয়া করে সঠিক ৬-সংখ্যার ওটিপি কোডটি দিন।');
@@ -172,7 +156,7 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           countryIso: selectedCountry?.countryIso,
-          mobileNumber: formData.phone, 
+          mobileNumber: formData.mobileNumber, 
           otp: formData.otp 
         })
       });
@@ -185,7 +169,6 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
           isPhoneVerified: true, 
           verificationToken: result.verificationToken 
         });
-        alert('মোবাইল নম্বর সফলভাবে ভেরিফাই করা হয়েছে!');
       } else {
         alert(result.message || 'ভুল ওটিপি কোড!');
       }
@@ -197,98 +180,130 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
     }
   };
 
+  const filteredCountries = countries.filter(c => 
+    c.countryName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    c.dialCode.includes(searchQuery) ||
+    c.uiDialCode.includes(searchQuery) ||
+    c.countryIso.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-bold text-gray-900 border-b pb-2">মোবাইল নম্বর ও ভেরিফিকেশন</h3>
       <p className="text-xs text-gray-600">নিজ নামে নিবন্ধিত মোবাইল সিম যেটি দিয়ে অন্য কোনো মার্চেন্ট একাউন্ট নেই সেটি ব্যবহার করুন।</p>
 
-      {/* ১. কান্ট্রি সিলেকশন বক্স (পতাকা এবং নাম থাকবে, কোনো শর্ট কোড নয়) */}
-      <div className="relative" ref={dropdownRef}>
-        <label className="block text-sm font-semibold text-gray-800 mb-1.5">
-          দেশ নির্বাচন করুন <span className="text-red-500">*</span>
-        </label>
-        
-        <div 
-          onClick={() => !formData.isPhoneVerified && setIsDropdownOpen(!isDropdownOpen)}
-          className={`w-full px-4 py-3 bg-white border border-gray-300 rounded-lg flex items-center justify-between cursor-pointer text-sm font-medium text-gray-900 transition-all ${formData.isPhoneVerified ? 'opacity-70 cursor-not-allowed bg-gray-50' : 'hover:border-[#16a085]'}`}
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="text-xl">{selectedCountry?.flag || '🇧🇩'}</span>
-            <span>{selectedCountry?.countryName || 'Bangladesh'}</span>
-          </div>
-          <span className="text-gray-500 text-xs">▼</span>
-        </div>
-
-        {/* সুন্দর পপআপ ড্রপডাউন লিস্ট (ডান পাশে ডায়াল কোড সহ) */}
-        {isDropdownOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-            {countries.map((c) => (
-              <div
-                key={c.countryIso}
-                onClick={() => handleSelectCountry(c)}
-                className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-none transition"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{c.flag}</span>
-                  <span className="text-sm font-semibold text-gray-800">{c.countryName}</span>
-                </div>
-                {/* 🔹 ডান পাশে ডাইরেক্ট dialCode (যেমন: +880) */}
-                <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">{c.dialCode}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ২. মোবাইল নম্বর ইনপুট সেকশন */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-1.5">
-          মোবাইল নম্বর <span className="text-red-500">*</span>
-        </label>
-        
-        <div className="flex rounded-lg overflow-hidden border border-gray-300 focus-within:border-[#16a085] focus-within:ring-2 focus-within:ring-[#16a085]/20 bg-white">
-          
-          {/* 🔹 ইনপুট বক্সের বাম পাশে ফিক্সড uiDialCode (যেমন: +88) */}
-          <div className="bg-gray-100 px-3.5 flex items-center justify-center text-gray-700 font-bold text-sm border-r border-gray-300 select-none">
-            {selectedCountry?.uiDialCode || '+88'}
-          </div>
-
-          {/* মোবাইল নম্বর ইনপুট ফিল্ড */}
-          <input
-            type="tel"
-            name="phone"
+      <div className="space-y-2">
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">
+            দেশ নির্বাচন করুন <span className="text-red-500">*</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
             disabled={formData.isPhoneVerified}
-            required
-            placeholder={selectedCountry?.placeholder || "01XXXXXXXXX"}
-            value={formData.phone}
-            onChange={handlePhoneChange}
-            className="w-full px-4 py-3 outline-none border-none text-gray-950 font-medium text-sm bg-transparent"
-          />
+            className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-medium text-sm hover:bg-gray-100 transition"
+          >
+            <span className="font-semibold text-gray-800">
+              {selectedCountry ? selectedCountry.countryName : 'দেশ নির্বাচন করুন'}
+            </span>
+            <span className="text-xs text-gray-500">পরিবর্তন করুন ▼</span>
+          </button>
+        </div>
 
-          {!formData.isPhoneVerified && (
-            <button
-              type="button"
-              onClick={handleSendOtp}
-              disabled={loading}
-              className="px-4 py-3 bg-[#16a085] text-white font-semibold text-sm hover:bg-[#12876f] whitespace-nowrap disabled:bg-gray-400 transition"
-            >
-              {loading ? 'পাঠানো হচ্ছে...' : 'কোড পাঠান'}
-            </button>
-          )}
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">
+            মোবাইল নম্বর <span className="text-red-500">*</span>
+          </label>
+
+          <div className="flex gap-2">
+            <div className="px-3.5 py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-950 font-bold text-sm flex items-center justify-center min-w-[65px]">
+              {selectedCountry?.uiDialCode || '+88'}
+            </div>
+
+            <input
+              type="tel"
+              name="localNumber"
+              disabled={formData.isPhoneVerified}
+              required
+              placeholder={selectedCountry?.placeholder || "01XXXXXXXXX"}
+              value={formData.localNumber || ''}
+              onChange={handlePhoneChange}
+              className={inputClassName}
+            />
+
+            {!formData.isPhoneVerified && (
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                disabled={loading}
+                className="px-4 py-3 bg-[#16a085] text-white font-semibold text-sm rounded-lg hover:bg-[#12876f] whitespace-nowrap disabled:bg-gray-400 transition"
+              >
+                {loading ? 'পাঠানো হচ্ছে...' : 'কোড পাঠান'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* ৩. ওটিপি ইনপুট সেকশন */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs px-4">
+          <div ref={modalRef} className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-gray-200">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h4 className="font-bold text-gray-900 text-sm">দেশ নির্বাচন করুন</h4>
+              <button 
+                type="button" 
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 font-bold text-lg"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="p-3 border-b border-gray-100 bg-gray-50">
+              <input
+                type="text"
+                placeholder="দেশ বা কোড দিয়ে খুঁজুন..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm outline-none focus:border-[#16a085]"
+              />
+            </div>
+
+            <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
+              {filteredCountries.length > 0 ? (
+                filteredCountries.map((c) => (
+                  <button
+                    key={c.countryIso}
+                    type="button"
+                    onClick={() => handleSelectCountry(c)}
+                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 text-left transition"
+                  >
+                    <span className="text-sm font-medium text-gray-800">{c.countryName}</span>
+                    <span className="text-sm font-bold text-[#16a085] bg-teal-50 px-2.5 py-1 rounded-md">
+                      {c.dialCode}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <p className="text-center py-6 text-xs text-gray-500">কোনো দেশ পাওয়া যায়নি</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {otpSent && !formData.isPhoneVerified && (
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
-          <label className="block text-xs font-semibold text-gray-700">এসএমএস-এর মাধ্যমে প্রাপ্ত ৬-সংখ্যার ওটিপি কোডটি লিখুন</label>
+        <div className="pt-2">
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            এসএমএস-এর মাধ্যমে প্রাপ্ত ৬-সংখ্যার ওটিপি কোডটি লিখুন
+          </label>
           <div className="flex gap-2">
             <input
               type="text"
               name="otp"
               maxLength={6}
               placeholder="XXXXXX"
-              value={formData.otp}
+              value={formData.otp || ''}
               onChange={handleChange}
               className={inputClassName}
             />
@@ -296,11 +311,14 @@ export default function Step1PhoneVerify({ formData, setFormData, handleChange, 
               type="button"
               onClick={handleVerifyOtp}
               disabled={loading}
-              className="px-4 py-3 bg-gray-900 text-white font-semibold text-sm rounded-lg hover:bg-gray-800 disabled:bg-gray-400"
+              className="px-5 py-3 bg-gray-900 text-white font-semibold text-sm rounded-lg hover:bg-gray-800 whitespace-nowrap disabled:bg-gray-400 transition"
             >
-              {loading ? 'যাচাই করা হচ্ছে...' : 'নিশ্চিত করুন'}
+              {loading ? 'যাচাই করা হচ্ছে...' : 'যাচাই করুন'}
             </button>
           </div>
+          <p className="text-xs text-green-600 font-medium pt-1.5">
+            ✓ আপনার মোবাইল নম্বরে সফলভাবে ওটিপি পাঠানো হয়েছে।
+          </p>
         </div>
       )}
 
