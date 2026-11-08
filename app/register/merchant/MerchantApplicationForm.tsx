@@ -98,10 +98,11 @@ export default function MerchantApplicationForm() {
 
     data.append('accountType', 'MERCHANT');
     data.append('subType', formData.businessMedium || 'retail');
-    data.append('countryName', formData.countryName);
-    data.append('countryIso', formData.countryIso);       
-    data.append('dialCode', formData.dialCode);
-    data.append('mobileNumber', formData.mobileNumber)       
+    data.append('countryName', formData.countryName || '');
+    data.append('countryIso', formData.countryIso || '');       
+    data.append('dialCode', formData.dialCode || '');
+    data.append('localNumber', formData.localNumber || '');
+    data.append('mobileNumber', formData.mobileNumber);       
     data.append('email', formData.email || '');
     data.append('verificationToken', formData.verificationToken || '');
     data.append('ownerName', formData.ownerName);
